@@ -1,17 +1,12 @@
 <div align="center">
 
-<!-- <picture> -->
-<!-- </picture> -->
+# fastagent
 
-# Ship-Agent
-
-
-
-ship-agent: a CLI tool that let you create servers for your langgraph and llama-index agents.
+fastagent: a server template to easily ship agent to production as monolith
 
 <h3>
 
-[Homepage](https://github.com/bastienpo/ship-agent)
+[Documentation](https://github.com/bastienpo/fastagent) | [Demo](https://github.com/bastienpo)
 
 </h3>
 
@@ -19,16 +14,12 @@ ship-agent: a CLI tool that let you create servers for your langgraph and llama-
 
 ---
 
-> **Warning (WORK IN PROGRESS)**
-> This project is still under development. 
-
-## Features
-
-## Installation
-
-## Usage
+> [!Warning]
+> This project is still under development. This is a side project that I decided to start while finding that shipping an agent to production can be a pain.
 
 ## Resources
+
+Some resources about the dependencies used for the project.
 
 - [FastAPI](https://fastapi.tiangolo.com/)
 - [Granian](https://granian.dev/)
