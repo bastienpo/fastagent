@@ -46,7 +46,6 @@ api.add_exception_handler(StarletteHTTPException, http_exception_handler)
 api.include_router(healthcheck.router)
 api.include_router(users.router)
 api.include_router(tokens.router)
-api.include_router(agents.router)
 
 api.add_middleware(RequestLoggingMiddleware, logger=logger)
 api.add_middleware(CORSMiddleware, allow_origins=["*"])
