@@ -2,8 +2,6 @@
 
 from datetime import datetime
 
-from argon2 import PasswordHasher
-from argon2.exceptions import VerificationError
 from asyncpg.connection import Connection
 from pydantic import (
     BaseModel,
@@ -12,6 +10,8 @@ from pydantic import (
     SecretBytes,
     SecretStr,
 )
+
+from app.internal.security import hash_password
 
 
 class UserCreate(BaseModel):
@@ -33,24 +33,6 @@ class UserModel(BaseModel):
     version: int
 
 
-def verify_password(password: SecretStr, password_hash: SecretStr) -> bool:
-    """Verify a password against a hashed password.
-
-    Args:
-        password: The password to verify.
-        password_hash: The hashed password to verify against.
-
-    Returns:
-        True if the password is correct, False otherwise.
-    """
-    try:
-        return PasswordHasher().verify(
-            password_hash.get_secret_value(), password.get_secret_value()
-        )
-    except VerificationError:
-        return False
-
-
 async def insert_user(conn: Connection, user: UserCreate) -> None:
     """Insert a user into the database.
 
@@ -64,9 +46,7 @@ async def insert_user(conn: Connection, user: UserCreate) -> None:
         RETURNING id, created_at
     """
 
-    password_hash = (
-        PasswordHasher().hash(user.password.get_secret_value()).encode("utf-8")
-    )
+    password_hash = hash_password(user.password.get_secret_value())
 
     await conn.execute(query, user.name, user.email, password_hash, timeout=3)
 

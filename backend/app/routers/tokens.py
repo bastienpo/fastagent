@@ -5,7 +5,8 @@ from datetime import timedelta
 from fastapi import APIRouter, HTTPException, Request, status
 
 from app.internal.data.tokens import AuthenticationTokenCreate, Scope, new_token
-from app.internal.data.users import get_user_by_email, verify_password
+from app.internal.data.users import get_user_by_email
+from app.internal.security import verify_password
 
 router = APIRouter(prefix="/v1", tags=["tokens"])
 
@@ -22,7 +23,9 @@ async def create_authentication_token_handler(
     async with request.app.async_pool.acquire() as conn:
         user = await get_user_by_email(conn, payload.email)
 
-    if not verify_password(payload.password, user.password_hash):
+    if not verify_password(
+        payload.password.get_secret_value(), user.password_hash.get_secret_value()
+    ):
         msg = "Invalid credentials"
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=msg)
 

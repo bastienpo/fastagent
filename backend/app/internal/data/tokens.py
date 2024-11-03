@@ -95,9 +95,7 @@ async def insert_token(conn: Connection, token: TokenModel) -> None:
 async def new_token(
     conn: Connection, user_id: int, ttl: timedelta, scope: Scope
 ) -> TokenModel:
-    """Create a new token and insert it into the database.
-
-    Generate a new token, insert it into the database, and return the token.
+    """Generate a new token, insert it into the database, and return the token.
 
     Args:
         conn: The database connection.
