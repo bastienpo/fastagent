@@ -10,7 +10,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.internal.data.database import init_database
 from app.internal.server.handlers import http_exception_handler
-from app.internal.server.middlewares import RequestLoggingMiddleware
+from app.internal.server.middlewares import MaxSizeMiddleware, RequestLoggingMiddleware
 from app.internal.settings import get_settings
 from app.routers import healthcheck, tokens, users
 
@@ -48,4 +48,5 @@ api.include_router(users.router)
 api.include_router(tokens.router)
 
 api.add_middleware(RequestLoggingMiddleware, logger=logger)
+api.add_middleware(MaxSizeMiddleware, max_size=1024 * 1024)
 api.add_middleware(CORSMiddleware, allow_origins=["*"])
