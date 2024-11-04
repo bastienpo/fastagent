@@ -6,11 +6,15 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from langchain_core.language_models import FakeListChatModel
+from langchain_core.prompts import ChatPromptTemplate
+from langserve import add_routes
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.internal.data.database import init_database
 from app.internal.server.handlers import http_exception_handler
 from app.internal.server.middlewares import MaxSizeMiddleware, RequestLoggingMiddleware
+from app.internal.settings import Settings
 from app.routers import healthcheck, tokens, users
 
 logging.config.fileConfig("logging.conf")
@@ -24,7 +28,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     Args:
         app: The FastAPI application.
     """
-    app.async_pool = await init_database()
+    dsn = Settings().database.get_dsn()
+    app.async_pool = await init_database(dsn)
     logger.info("Connection to database opened")
 
     yield
@@ -38,7 +43,6 @@ api = FastAPI(
     version="0.0.1",
     lifespan=lifespan,
 )
-
 api.add_exception_handler(StarletteHTTPException, http_exception_handler)
 
 api.include_router(healthcheck.router)
@@ -46,5 +50,6 @@ api.include_router(users.router)
 api.include_router(tokens.router)
 
 api.add_middleware(RequestLoggingMiddleware, logger=logger)
-api.add_middleware(MaxSizeMiddleware, max_size=1024 * 1024)
+api.add_middleware(MaxSizeMiddleware, max_size=1024 * 1024)  # Approximatly 1 MB
 api.add_middleware(CORSMiddleware, allow_origins=["*"])
+

@@ -16,6 +16,7 @@ dependencies = [
   "pydantic[email]>=2.9.2",
   "pydantic-settings>=2.6.1",
   "uvloop>=0.21.0",
+  "langserve[server]>=0.3.0",
 ]
 
 [tool.uv]
