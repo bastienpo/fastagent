@@ -2,7 +2,7 @@
 
 from asyncpg import Pool, create_pool
 
-from app.internal.settings import get_settings
+from app.internal.settings import Settings
 
 
 async def init_database() -> Pool:
@@ -11,7 +11,7 @@ async def init_database() -> Pool:
     Returns:
         The database pool.
     """
-    settings = get_settings()
-    dsn = settings.get_dsn()
+    settings = Settings()
+    dsn = settings.database.get_dsn()
 
     return await create_pool(dsn, max_size=50)

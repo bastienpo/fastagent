@@ -1,10 +1,41 @@
 """Configuration of the API."""
 
 from functools import lru_cache
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import Field
+from fastapi import Depends
+from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class GranianSettings(BaseModel):
+    """Granian settings."""
+
+    port: int = Field(description="The port to use.")
+
+    reload: bool = Field(description="Whether to reload the application.")
+
+    interface: Literal["asgi", "asginl"] = Field(description="The interface to use.")
+
+    loop: Literal["uvloop", "asyncio"] = Field(description="The event loop to use.")
+
+
+class DatabaseSettings(BaseModel):
+    """Database settings."""
+
+    database: str = Field(description="The database name.")
+
+    user: str = Field(description="The database user.")
+
+    host: str = Field(description="The database host.", default="localhost")
+
+    password: str = Field(description="The database password.")
+
+    port: int = Field(description="The database port.")
+
+    def get_dsn(self: "DatabaseSettings") -> str:
+        """Get the Data Source Name."""
+        return f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
 
 
 class Settings(BaseSettings):
@@ -16,40 +47,22 @@ class Settings(BaseSettings):
         extra="ignore",
         frozen=True,
         case_sensitive=False,
+        env_nested_delimiter="_",
     )
 
     environment: Literal["development", "staging", "production"] = Field(
         default="development", description="The environment."
     )
 
-    granian_port: int = Field(description="The port to use.")
+    granian: GranianSettings = Field(description="Granian settings.", alias="granian")
 
-    granian_reload: bool = Field(description="Whether to reload the application.")
-
-    granian_interface: Literal["asgi", "asginl"] = Field(
-        description="The interface to use."
-    )
-
-    granian_loop: Literal["uvloop", "asyncio"] = Field(
-        description="The event loop to use."
-    )
-
-    db_database: str = Field(description="The database name.")
-
-    db_user: str = Field(description="The database user.")
-
-    db_host: str = Field(description="The database host.", default="localhost")
-
-    db_password: str = Field(description="The database password.")
-
-    db_port: int = Field(description="The database port.")
-
-    def get_dsn(self: "Settings") -> str:
-        """Get the Data Source Name."""
-        return f"postgresql://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_database}"
+    database: DatabaseSettings = Field(description="Database settings.", alias="db")
 
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
     """Get the configuration."""
     return Settings()
+
+
+SettingsDependency = Annotated[Settings, Depends(get_settings)]

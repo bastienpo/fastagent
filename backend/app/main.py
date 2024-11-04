@@ -4,14 +4,13 @@ import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.internal.data.database import init_database
 from app.internal.server.handlers import http_exception_handler
 from app.internal.server.middlewares import MaxSizeMiddleware, RequestLoggingMiddleware
-from app.internal.settings import get_settings
 from app.routers import healthcheck, tokens, users
 
 logging.config.fileConfig("logging.conf")
@@ -35,10 +34,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 
 api = FastAPI(
-    title="Ship Agent",
+    title="fastagent",
     version="0.0.1",
     lifespan=lifespan,
-    dependencies=[Depends(get_settings)],
 )
 
 api.add_exception_handler(StarletteHTTPException, http_exception_handler)
