@@ -2,7 +2,7 @@
 
 import logging
 
-from fastapi import HTTPException, status
+from fastapi import status
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
@@ -52,7 +52,10 @@ class MaxSizeMiddleware(BaseHTTPMiddleware):
             total_size += chunk_size
 
             if self.max_size is not None and total_size > self.max_size:
-                raise HTTPException(413, "Payload too large")
+                return JSONResponse(
+                    status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                    content={"detail": "Payload too large"},
+                )
 
             return message
 
