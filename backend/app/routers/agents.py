@@ -6,19 +6,24 @@ from fastapi import APIRouter, Depends, Request, Response
 from langserve import APIHandler
 from sse_starlette import EventSourceResponse
 
-from app.internal.agent import chain
+from app.internal.services import AgentBuilder
 
 router = APIRouter(prefix="/v1", tags=["agent"])
 
 
 async def _get_api_handler() -> APIHandler:
-    """Prepare a RunnableLambda."""
-    return APIHandler(chain, path="/agents")
+    """Setup an api handler for the chain."""
+    builder = AgentBuilder().build()
+
+    return APIHandler(builder, path="/agents")
+
+
+APIHandlerDependency = Annotated[APIHandler, Depends(_get_api_handler)]
 
 
 @router.post("/agents/invoke")
 async def invoke_agents_handler(
-    request: Request, runnable: Annotated[APIHandler, Depends(_get_api_handler)]
+    request: Request, runnable: APIHandlerDependency
 ) -> Response:
     """Handle invoke request."""
     return await runnable.invoke(request)
@@ -26,7 +31,7 @@ async def invoke_agents_handler(
 
 @router.post("/agents/stream")
 async def stream_agents_handler(
-    request: Request, runnable: Annotated[APIHandler, Depends(_get_api_handler)]
+    request: Request, runnable: APIHandlerDependency
 ) -> EventSourceResponse:
     """Handle stream request."""
     return await runnable.stream(request)
