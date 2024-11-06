@@ -6,9 +6,6 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from langchain_core.language_models import FakeListChatModel
-from langchain_core.prompts import ChatPromptTemplate
-from langserve import add_routes
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.internal.data.database import init_database
@@ -52,4 +49,3 @@ api.include_router(tokens.router)
 api.add_middleware(RequestLoggingMiddleware, logger=logger)
 api.add_middleware(MaxSizeMiddleware, max_size=1024 * 1024)  # Approximatly 1 MB
 api.add_middleware(CORSMiddleware, allow_origins=["*"])
-
