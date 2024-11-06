@@ -29,7 +29,7 @@ async def invoke_agents_handler(
     return await runnable.invoke(request)
 
 
-@router.get("/agents/batch")
+@router.post("/agents/batch")
 async def batch_agents_handler(
     request: Request, runnable: APIHandlerDependency
 ) -> Response:

@@ -1,6 +1,8 @@
 """Service module for agent."""
 
-from langchain_core.language_models import BaseLanguageModel, FakeListLLM
+from langchain_core.language_models import FakeMessagesListChatModel
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.messages import AIMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable
 
@@ -10,11 +12,16 @@ class AgentBuilder:
 
     def __init__(self: "AgentBuilder") -> None:
         """Initialize the builder."""
-        self.prompt = ChatPromptTemplate.from_template(
-            "Tell me a story about a {topic}."
+        self.prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", "Write a story about the topic ."),
+                ("user", "Topic: {topic}"),
+            ]
         )
-        self.model = FakeListLLM(
-            responses=["I'm sorry, I don't have any stories to tell."]
+        self.model = FakeMessagesListChatModel(
+            responses=[
+                AIMessage(content="I'm sorry, I don't have any stories to tell."),
+            ]
         )
 
     def set_prompt(self: "AgentBuilder", prompt: ChatPromptTemplate) -> "AgentBuilder":
@@ -22,7 +29,7 @@ class AgentBuilder:
         self.prompt = prompt
         return self
 
-    def set_model(self: "AgentBuilder", model: BaseLanguageModel) -> "AgentBuilder":
+    def set_model(self: "AgentBuilder", model: BaseChatModel) -> "AgentBuilder":
         """Set the model."""
         self.model = model
         return self

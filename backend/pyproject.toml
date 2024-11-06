@@ -19,8 +19,11 @@ dependencies = [
   "langserve[server]>=0.3.0",
 ]
 
+[tool.pytest]
+asyncio_default_fixture_loop_scope = "function"
+
 [tool.uv]
-dev-dependencies = ["granian[reload]>=1.6.3"]
+dev-dependencies = ["granian[reload]>=1.6.3", "httpx>=0.27.2", "pytest>=8.3.3"]
 
 [tool.ruff]
 line-length = 88
@@ -31,3 +34,6 @@ select = ["ALL"]
 ignore = ["COM812", "ISC001", "D104"]
 
 pydocstyle.convention = "google"
+
+[tool.ruff.lint.extend-per-file-ignores]
+"tests/**/*.py" = ["S101", "ARG", "FBT", "PLR2004"]

@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.internal.data.database import init_database
-from app.internal.server.dependencies import required_authenticated
+from app.internal.server.dependencies import require_auth_dependency
 from app.internal.server.handlers import http_exception_handler
 from app.internal.server.middlewares import (
     AuthenticationMiddleware,
@@ -47,9 +47,8 @@ api = FastAPI(
 )
 api.add_exception_handler(StarletteHTTPException, http_exception_handler)
 
-
-api.include_router(healthcheck.router, dependencies=[required_authenticated])
-api.include_router(agents.router, dependencies=[required_authenticated])
+api.include_router(healthcheck.router, dependencies=[require_auth_dependency])
+api.include_router(agents.router, dependencies=[require_auth_dependency])
 api.include_router(users.router)
 api.include_router(tokens.router)
 

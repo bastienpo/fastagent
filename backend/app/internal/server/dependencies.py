@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException, Request, status
 from app.internal.data.users import is_anonymous
 
 
-def required_authenticated(request: Request) -> None:
+def require_auth(request: Request) -> None:
     """Raise an error if the user is anonymous.
 
     Args:
@@ -18,4 +18,4 @@ def required_authenticated(request: Request) -> None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
 
-required_authenticated = Depends(required_authenticated)
+require_auth_dependency = Depends(require_auth)
