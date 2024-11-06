@@ -1,0 +1,32 @@
+name: Dagger
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+      - name: Format
+        uses: dagger/dagger-for-github@v6.14.0
+        with:
+          version: "0.13.7"
+          verb: call
+          args: format --directory ./backend/app
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+      - name: Lint
+        uses: dagger/dagger-for-github@v6.14.0
+        with:
+          version: "0.13.7"
+          verb: call
+          args: lint --directory ./backend/app
