@@ -1,6 +1,6 @@
 """User data and database CRUD operations."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from asyncpg.connection import Connection
 from pydantic import (
@@ -11,6 +11,7 @@ from pydantic import (
     SecretStr,
 )
 
+from app.internal.data.tokens import Scope, hash_token
 from app.internal.security import hash_password
 
 
@@ -33,6 +34,16 @@ class UserModel(BaseModel):
     version: int
 
 
+AnnonymousUser = UserModel(
+    id=0,
+    created_at=datetime.now(UTC),
+    name="",
+    email="anonymous@example.com",
+    password_hash=b"",
+    version=0,
+)
+
+
 async def insert_user(conn: Connection, user: UserCreate) -> None:
     """Insert a user into the database.
 
@@ -49,6 +60,34 @@ async def insert_user(conn: Connection, user: UserCreate) -> None:
     password_hash = hash_password(user.password.get_secret_value())
 
     await conn.execute(query, user.name, user.email, password_hash, timeout=3)
+
+
+async def get_user_for_token(conn: Connection, scope: Scope, token: str) -> UserModel:
+    """Get a user for a token."""
+    token_hash = hash_token(token)
+
+    query = """
+    SELECT users.id,
+        users.created_at,
+        users.name,
+        users.email,
+        users.password_hash,
+        users.version
+        FROM users
+        INNER JOIN tokens
+            ON users.id = tokens.user_id
+        WHERE tokens.hash = $1
+            AND tokens.scope = $2
+            AND tokens.expiry > $3
+    """
+
+    row = await conn.fetchrow(query, token_hash, scope, datetime.now(UTC), timeout=3)
+
+    if row is None:
+        msg = "Invalid token"
+        raise ValueError(msg)
+
+    return UserModel.model_validate(dict(row))
 
 
 async def get_user_by_email(conn: Connection, email: EmailStr) -> UserModel:

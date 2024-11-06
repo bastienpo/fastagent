@@ -15,6 +15,8 @@ from pydantic import (
     SecretStr,
 )
 
+TOKEN_LENGTH = 26
+
 
 class Scope(str, Enum):
     """Token scope."""
@@ -33,11 +35,16 @@ class AuthenticationTokenCreate(BaseModel):
 class TokenModel(BaseModel):
     """Token model."""
 
-    plain_text: SecretStr = Field(min_length=26, max_length=26)
+    plain_text: SecretStr = Field(min_length=TOKEN_LENGTH, max_length=TOKEN_LENGTH)
     hash: SecretBytes
     user_id: int
     expiry: datetime
     scope: Scope
+
+
+def hash_token(token: str) -> SecretBytes:
+    """Hash a token using sha3_256."""
+    return hashlib.sha3_256(token.encode("utf-8")).digest()
 
 
 def create_token(user_id: int, ttl: timedelta, scope: Scope) -> TokenModel:
@@ -57,7 +64,7 @@ def create_token(user_id: int, ttl: timedelta, scope: Scope) -> TokenModel:
     token_plain_text = base64.b32encode(random_bytes).decode().rstrip("=")
 
     # Hash the token using sha3_256
-    token_hash = hashlib.sha3_256(token_plain_text.encode("utf-8")).digest()
+    token_hash = hash_token(token_plain_text)
 
     expiry = datetime.now(UTC) + ttl
 

@@ -2,11 +2,16 @@
 
 import logging
 
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import JSONResponse, Response
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
+
+from app.internal.data.tokens import TOKEN_LENGTH
+from app.internal.data.tokens import Scope as TokenScope
+from app.internal.data.users import AnnonymousUser, get_user_for_token
+from app.internal.server.context import Context
 
 
 class MaxSizeMiddleware(BaseHTTPMiddleware):
@@ -83,3 +88,66 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         """
         self.logger.info("received request", extra={"request": request})
         return await call_next(request)
+
+
+class AuthenticationMiddleware(BaseHTTPMiddleware):
+    """Authentication middleware."""
+
+    def __init__(self, app: ASGIApp) -> None:
+        """Initialize the middleware.
+
+        Args:
+            app: The ASGI app.
+        """
+        super().__init__(app)
+
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> Response | JSONResponse:
+        """Dispatch the request."""
+        authorization = request.headers.get("Authorization")
+
+        if authorization is None or authorization == "":
+            # If token is not provided, use anonymous user
+            request.state.context = Context(user=AnnonymousUser)
+        elif not authorization.startswith("Bearer "):
+            return JSONResponse(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                content={
+                    "detail": "Invalid token format, Token should start with 'Bearer '"
+                },
+                headers={"Vary": "Authorization"},
+            )
+        else:
+            token = authorization.split(" ")[1]
+
+            # Token format validation
+            if len(token) != TOKEN_LENGTH:
+                return JSONResponse(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    content={"detail": "Invalid token format"},
+                    headers={"Vary": "Authorization"},
+                )
+
+            # Retrieve user from token
+            async with request.app.async_pool.acquire() as conn:
+                try:
+                    user = await get_user_for_token(
+                        conn, TokenScope.AUTHENTICATION, token
+                    )
+                except ValueError:
+                    return JSONResponse(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        content={"detail": "Invalid token"},
+                        headers={"Vary": "Authorization"},
+                    )
+
+            request.state.context = Context(user=user)
+
+        response = await call_next(request)
+        response.headers["Vary"] = "Authorization"
+
+        # Clean up context
+        request.state.context = None
+
+        return response

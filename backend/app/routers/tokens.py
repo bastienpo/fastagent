@@ -12,7 +12,7 @@ router = APIRouter(prefix="/v1", tags=["tokens"])
 
 
 @router.post(
-    "/tokens/authentification",
+    "/tokens/authentication",
     status_code=status.HTTP_201_CREATED,
 )
 async def create_authentication_token_handler(
