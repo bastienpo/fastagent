@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.internal.data.database import init_database
+from app.internal.server.dependencies import required_authenticated
 from app.internal.server.handlers import http_exception_handler
 from app.internal.server.middlewares import (
     AuthenticationMiddleware,
@@ -46,11 +47,11 @@ api = FastAPI(
 )
 api.add_exception_handler(StarletteHTTPException, http_exception_handler)
 
-api.include_router(healthcheck.router)
+
+api.include_router(healthcheck.router, dependencies=[required_authenticated])
+api.include_router(agents.router, dependencies=[required_authenticated])
 api.include_router(users.router)
 api.include_router(tokens.router)
-api.include_router(agents.router)
-
 
 api.add_middleware(RequestLoggingMiddleware, logger=logger)
 api.add_middleware(MaxSizeMiddleware, max_size=1024 * 1024)  # Approximatly 1 MB

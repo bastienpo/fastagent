@@ -44,6 +44,11 @@ AnnonymousUser = UserModel(
 )
 
 
+def is_anonymous(user: UserModel) -> bool:
+    """Check if a user is anonymous."""
+    return user == AnnonymousUser or user.id == 0
+
+
 async def insert_user(conn: Connection, user: UserCreate) -> None:
     """Insert a user into the database.
 
