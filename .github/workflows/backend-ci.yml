@@ -5,6 +5,7 @@ on:
     branches: ["main"]
     paths:
       - "backend/app/**"
+  workflow_dispatch:
 
 jobs:
   format:
@@ -32,3 +33,21 @@ jobs:
           version: "0.13.7"
           verb: call
           args: lint --directory ./backend/app
+
+  build-and-push:
+    name: Build and push (Docker image)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+      - name: Build and push using dagger
+        uses: dagger/dagger-for-github@v6.14.0
+        with:
+          version: "0.13.7"
+          verb: call
+          args: build-and-push --context ./backend --registry=$DOCKER_REGISTRY --username=$DOCKER_USERNAME --secret=env:DOCKER_SECRET --image-name=$DOCKER_IMAGE_NAME
+        env:
+          DOCKER_REGISTRY: ghcr.io
+          DOCKER_USERNAME: ${{ github.actor }}
+          DOCKER_SECRET: ${{ secrets.GITHUB_TOKEN }}
+          DOCKER_IMAGE_NAME: ${{ github.repository }}-backend

@@ -1,6 +1,8 @@
 import dagger
 from dagger import dag, function, object_type
 
+from typing import Annotated
+
 
 @object_type
 class Pipeline:
@@ -36,3 +38,23 @@ class Pipeline:
         return await ruff_container.with_exec(
             ["uv", "tool", "run", "ruff", "check", "."]
         ).stdout()
+
+    @function
+    async def build_and_push(
+        self,
+        context: dagger.Directory,
+        registry: Annotated[str, "The registry to push the image to."],
+        username: Annotated[str, "The username to use for authentication."],
+        secret: Annotated[dagger.Secret, "The GitHub token secret."],
+        image_name: Annotated[str, "The name of the image to push."],
+    ) -> dagger.Container:
+        """Builds the Docker image and pushes it to the registry."""
+        build = (
+            dag.container()
+            .build(context)
+            .with_registry_auth(
+                address=f"{registry}/{image_name}", username=username, secret=secret
+            )
+        )
+
+        return await build.publish(f"{registry}/{image_name}")
