@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION=3.13
+ARG PYTHON_VERSION=3.12
 FROM ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-bookworm-slim AS builder
 
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
@@ -42,4 +42,9 @@ ENV PATH="/app/.venv/bin:$PATH" \
 
 EXPOSE 8000
 
-CMD ["granian", "--interface", "asgi", "--workers", "4", "--threads", "4", "--loop", "uvloop", "--host", "0.0.0.0", "app.main:app"]
+ENV GRANIAN_PORT=8000
+ENV GRANIAN_WORKERS=8
+ENV GRANIAN_INTERFACE=asgi
+ENV GRANIAN_LOOP=uvloop
+
+CMD ["granian", "app.main:api"]

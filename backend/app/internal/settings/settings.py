@@ -19,6 +19,8 @@ class GranianSettings(BaseModel):
 
     loop: Literal["uvloop", "asyncio"] = Field(description="The event loop to use.")
 
+    workers: int = Field(description="The number of workers to use.")
+
 
 class DatabaseSettings(BaseModel):
     """Database settings."""
