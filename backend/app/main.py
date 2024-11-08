@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.internal.data.database import init_database
-from app.internal.server.dependencies import require_auth_dependency
+from app.dependencies import require_auth_dependency
 from app.internal.server.handlers import http_exception_handler
 from app.internal.server.middlewares import (
     AuthenticationMiddleware,

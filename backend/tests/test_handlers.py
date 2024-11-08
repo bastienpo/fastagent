@@ -3,7 +3,7 @@
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from app.internal.server.dependencies import require_auth
+from app.dependencies import require_auth
 from app.main import api
 
 client = TestClient(app=api)

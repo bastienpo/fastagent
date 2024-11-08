@@ -1,3 +1,3 @@
-from .agent_service import AgentBuilder
+from .agent import AgentBuilder
 
 __all__ = ["AgentBuilder"]
