@@ -1,16 +1,14 @@
-import { createRoot } from "react-dom/client"
-import { StrictMode } from "react"
+import React from "react"
 
-function App() {
+const App: React.FC = () => {
     return (
-        <StrictMode>
-            <div>Hello World</div>
-        </StrictMode>
+        <div className="p-4">
+            <h1 className="text-3xl font-bold text-primary">
+                Hello, Tailwind and DaisyUI!
+            </h1>
+            <button className="btn btn-primary">Click me</button>
+        </div>
     )
 }
 
-const container = document.getElementById("root")
-if (container) {
-    const root = createRoot(container)
-    root.render(<App />)
-}
+export default App
