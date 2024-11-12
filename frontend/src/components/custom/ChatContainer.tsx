@@ -1,13 +1,6 @@
 import { ScrollArea } from "@/components/ui/scroll-area"
 import MessageInput from "@/components/custom/MessageInput"
-
-interface Message {
-    id: string
-    content: string
-    sender: "user" | "bot"
-    timestamp: Date
-}
-
+import { Message } from "@/types/message"
 interface ChatContainerProps {
     messages: Message[]
     onSendMessage: (message: string) => void
@@ -21,22 +14,20 @@ const ChatContainer = ({
 }: ChatContainerProps) => {
     return (
         <div className="flex flex-col h-full">
-            <ScrollArea className="flex-1 p-4">
+            <ScrollArea className="flex-1 md:px-36 md:pt-6 p-6">
                 <div className="space-y-4">
                     {messages.map((message) => (
                         <div
                             key={message.id}
-                            className={`flex ${
-                                message.sender === "user"
-                                    ? "justify-end"
-                                    : "justify-start"
+                            className={`flex justify-start ${
+                                message.sender === "user" ? "" : ""
                             }`}
                         >
                             <div
-                                className={`max-w-[70%] rounded-lg p-3 ${
+                                className={`rounded-lg p-3 ${
                                     message.sender === "user"
                                         ? "bg-blue-500 text-white"
-                                        : "bg-gray-200 text-gray-900"
+                                        : "bg-gray-200 text-gray-900 w-full"
                                 }`}
                             >
                                 {message.content}
@@ -46,16 +37,14 @@ const ChatContainer = ({
                                             ? "text-blue-100"
                                             : "text-gray-500"
                                     }`}
-                                >
-                                    {message.timestamp.toLocaleTimeString()}
-                                </div>
+                                ></div>
                             </div>
                         </div>
                     ))}
                 </div>
             </ScrollArea>
 
-            <div className="p-4 border-t">
+            <div className="md:px-36 md:py-6 p-6">
                 <MessageInput
                     onSendMessage={onSendMessage}
                     onFileUpload={onFileUpload}

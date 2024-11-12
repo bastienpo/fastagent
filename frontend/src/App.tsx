@@ -1,14 +1,7 @@
 import { useState } from "react"
 import ChatLayout from "@/components/custom/ChatLayout"
 import ChatContainer from "@/components/custom/ChatContainer"
-
-interface Message {
-    id: string
-    content: string
-    sender: "user" | "bot"
-    timestamp: Date
-    fileUrl?: string
-}
+import { Message } from "@/types/message"
 
 const App = () => {
     const [messages, setMessages] = useState<Message[]>([])
@@ -16,10 +9,11 @@ const App = () => {
     // Message handling
     const handleSendMessage = (content: string) => {
         const newMessage: Message = {
-            id: Date.now().toString(),
+            id: 1,
             content,
             sender: "user",
             timestamp: new Date(),
+            conversation_id: 1,
         }
 
         setMessages((prev) => [...prev, newMessage])
@@ -27,25 +21,14 @@ const App = () => {
         // Simulate bot response
         setTimeout(() => {
             const botMessage: Message = {
-                id: (Date.now() + 1).toString(),
-                content: "This is a simulated response from the chatbot.",
-                sender: "bot",
+                id: 2,
+                content: "Hello world!.",
+                sender: "assistant",
                 timestamp: new Date(),
+                conversation_id: 1,
             }
             setMessages((prev) => [...prev, botMessage])
-        }, 1000)
-    }
-
-    const handleFileUpload = (file: File) => {
-        const fileUrl = URL.createObjectURL(file)
-        const newMessage: Message = {
-            id: Date.now().toString(),
-            content: `Uploaded file: ${file.name}`,
-            sender: "user",
-            timestamp: new Date(),
-            fileUrl,
-        }
-        setMessages((prev) => [...prev, newMessage])
+        }, 5)
     }
 
     return (
@@ -53,7 +36,7 @@ const App = () => {
             <ChatContainer
                 messages={messages}
                 onSendMessage={handleSendMessage}
-                onFileUpload={handleFileUpload}
+                onFileUpload={() => {}}
             />
         </ChatLayout>
     )

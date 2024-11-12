@@ -1,5 +1,6 @@
 import React from "react"
-import { Separator } from "@/components/ui/separator"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import AppSidebar from "@/components/custom/AppSidebar"
 
 interface ChatLayoutProps {
     children: React.ReactNode
@@ -7,11 +8,15 @@ interface ChatLayoutProps {
 
 const ChatLayout = ({ children }: ChatLayoutProps) => {
     return (
-        <div className="flex h-screen bg-gray-100">
-            <Separator orientation="vertical" />
-
-            <div className="flex-1 flex flex-col">{children}</div>
-        </div>
+        <SidebarProvider>
+            <AppSidebar />
+            <main className="relative w-full">
+                <SidebarTrigger />
+                <div className="flex h-full bg-gray-100">
+                    <div className="flex-1 flex flex-col">{children}</div>
+                </div>
+            </main>
+        </SidebarProvider>
     )
 }
 
