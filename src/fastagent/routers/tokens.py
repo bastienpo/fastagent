@@ -2,11 +2,10 @@
 
 from datetime import timedelta
 
-from fastapi import APIRouter, HTTPException, Request, status
-
 from app.internal.data.tokens import AuthenticationTokenCreate, Scope, new_token
 from app.internal.data.users import get_user_by_email
 from app.internal.security import verify_password
+from fastapi import APIRouter, HTTPException, Request, status
 
 router = APIRouter(prefix="/v1", tags=["tokens"])
 

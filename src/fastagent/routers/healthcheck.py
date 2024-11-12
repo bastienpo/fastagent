@@ -1,9 +1,8 @@
 """Healthcheck router."""
 
-from fastapi import APIRouter, status
-
 from app.internal.data.healthcheck import Healthcheck
 from app.internal.settings import SettingsDependency
+from fastapi import APIRouter, status
 
 router = APIRouter(prefix="/v1", tags=["healthcheck"])
 

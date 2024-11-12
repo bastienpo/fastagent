@@ -2,6 +2,8 @@
 
 from datetime import UTC, datetime
 
+from app.internal.data.tokens import Scope, hash_token
+from app.internal.security import hash_password
 from asyncpg.connection import Connection
 from pydantic import (
     BaseModel,
@@ -10,9 +12,6 @@ from pydantic import (
     SecretBytes,
     SecretStr,
 )
-
-from app.internal.data.tokens import Scope, hash_token
-from app.internal.security import hash_password
 
 
 class UserCreate(BaseModel):

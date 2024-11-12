@@ -1,8 +1,7 @@
 """Request context."""
 
-from pydantic import BaseModel
-
 from app.internal.data.users import UserModel
+from pydantic import BaseModel
 
 
 class Context(BaseModel):

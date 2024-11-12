@@ -7,15 +7,15 @@ run:
 
 audit:
 	@echo "Checking code for linting errors (ruff)..."
-	uv tool run ruff check . --config pyproject.toml
+	uv tool run ruff check . --config .ruff.toml
 	@echo "Checking code for formatting errors (ruff)..."
-	uv tool run ruff format . --check --config pyproject.toml
+	uv tool run ruff format . --check --config .ruff.toml
 
 fix:
 	@echo "Fixing code for linting errors (ruff)..."
-	uv tool run ruff check . --config pyproject.toml --select I --fix
+	uv tool run ruff check . --config .ruff.toml --select I --fix
 	@echo "Fixing code for formatting errors (ruff)..."
-	uv tool run ruff format . --config pyproject.toml
+	uv tool run ruff format . --config .ruff.toml
 	
 
 clean:

@@ -1,10 +1,10 @@
 """Tests for handlers."""
 
+from app.main import api
 from fastapi import status
 from fastapi.testclient import TestClient
 
 from src.fastagent.dependencies import require_auth
-from app.main import api
 
 client = TestClient(app=api)
 # Disable authentication for testing

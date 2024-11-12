@@ -2,16 +2,15 @@
 
 import logging
 
+from app.internal.data.tokens import TOKEN_LENGTH
+from app.internal.data.tokens import Scope as TokenScope
+from app.internal.data.users import AnnonymousUser, get_user_for_token
+from app.internal.server.context import Context
 from fastapi import HTTPException, status
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
-
-from app.internal.data.tokens import TOKEN_LENGTH
-from app.internal.data.tokens import Scope as TokenScope
-from app.internal.data.users import AnnonymousUser, get_user_for_token
-from app.internal.server.context import Context
 
 
 class MaxSizeMiddleware(BaseHTTPMiddleware):

@@ -2,11 +2,10 @@
 
 from typing import Annotated
 
+from app.internal.services import AgentBuilder
 from fastapi import APIRouter, Depends, Request, Response
 from langserve import APIHandler
 from sse_starlette import EventSourceResponse
-
-from app.internal.services import AgentBuilder
 
 router = APIRouter(prefix="/v1", tags=["agent"])
 

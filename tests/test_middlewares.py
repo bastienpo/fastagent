@@ -1,11 +1,10 @@
 """Middlewares tests."""
 
 import pytest
-from fastapi import FastAPI, status
-from fastapi.testclient import TestClient
-
 from app.internal.server.middlewares import MaxSizeMiddleware
 from app.routers import agents
+from fastapi import FastAPI, status
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture(scope="module")

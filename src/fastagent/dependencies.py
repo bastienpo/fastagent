@@ -1,8 +1,7 @@
 """Dependencies."""
 
-from fastapi import Depends, HTTPException, Request, status
-
 from app.internal.data.users import is_anonymous
+from fastapi import Depends, HTTPException, Request, status
 
 
 def require_auth(request: Request) -> None:

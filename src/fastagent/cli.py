@@ -77,9 +77,10 @@ def init() -> None:
 @app.command()
 def dev(
     target: str,
-    reload: bool = False,
     host: str = "127.0.0.1",
     port: int = 8000,
+    *,
+    reload: bool = False,
 ) -> None:
     """Run the FastAgent CLI in development mode."""
     console = Console()
@@ -98,7 +99,7 @@ def dev(
     console.print(
         Panel.fit(
             f"Running FastAgent CLI in development mode 🚀 \n\n"
-            f"The application is available at [bold green]http://{host}:{port}[/bold green]",
+            f"The application is available at [bold green]http://{host}:{port}[/bold green]",  # noqa: E501
             style="bold green",
         )
     )
