@@ -1,0 +1,11 @@
+line-length = 88
+target-version = "py313"
+
+[lint]
+select = ["ALL"]
+ignore = ["COM812", "ISC001", "D104"]
+
+pydocstyle.convention = "google"
+
+[lint.extend-per-file-ignores]
+"tests/**/*.py" = ["S101", "ARG", "FBT", "PLR2004"]
