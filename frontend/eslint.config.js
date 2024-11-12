@@ -5,6 +5,7 @@ import pluginReact from "eslint-plugin-react"
 import pluginReactHooks from "eslint-plugin-react-hooks"
 import pluginPrettier from "eslint-config-prettier"
 import pluginOxlint from "eslint-plugin-oxlint"
+import pluginReactCompiler from "eslint-plugin-react-compiler"
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -25,6 +26,10 @@ export default [
         },
         plugins: {
             reactHooks: pluginReactHooks,
+            "react-compiler": pluginReactCompiler,
+        },
+        rules: {
+            "react-compiler/react-compiler": "error",
         },
     },
     pluginReact.configs.flat["jsx-runtime"],
