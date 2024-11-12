@@ -2,8 +2,8 @@
 
 all: help
 
-run:
-	@uv run granian app.main:api
+build:
+	@uv build --resolution=highest --verify-hashes
 
 audit:
 	@echo "Checking code for linting errors (ruff)..."
@@ -25,7 +25,7 @@ clean:
 
 help:
 	@echo "Usage: make <target>"
-	@echo "  run      Run the application"
+	@echo "  build    Build the fastagent package"
 	@echo "  audit    Check the code quality"
 	@echo "  fix      Fix the code quality"
 	@echo "  clean    Clean the project files"
