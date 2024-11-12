@@ -84,6 +84,14 @@ def dev(
 ) -> None:
     """Run the FastAgent CLI in development mode."""
     console = Console()
+    if not Path("./.fastagent.toml").exists():
+        console.print(
+            Panel.fit(
+                "[bold red]❌ Configuration file not found![/bold red]",
+                style="bold red",
+            )
+        )
+        return
 
     granian = Granian(
         target=target,

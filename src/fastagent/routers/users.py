@@ -1,8 +1,9 @@
 """Users router."""
 
-from app.internal.data.users import UserCreate, insert_user
 from asyncpg.exceptions import UniqueViolationError
 from fastapi import APIRouter, HTTPException, Request, status
+
+from fastagent.internal.data.users import UserCreate, insert_user
 
 router = APIRouter(prefix="/v1", tags=["users"])
 
