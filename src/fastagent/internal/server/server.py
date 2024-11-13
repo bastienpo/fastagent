@@ -17,15 +17,26 @@ class FastAgentServer:
     _api: FastAPI = FastAPI()
     server: Granian
 
-    def _prepare_api(self, agent_module: AgentModule) -> None:
-        """Prepare the API."""
-        self._api.include_router(create_langchain_router(agent_module))
-        self._api.include_router(healthcheck.router)
+    def _prepare_api(self: "FastAgentServer", agent_module: AgentModule) -> None:
+        """Prepare the API.
 
-    def __init__(self, configuration: Configuration, agent_module: AgentModule) -> None:
-        """Initialize the server."""
-        self._prepare_api(agent_module)
+        Args:
+            agent_module: The agent module.
+        """
+        self._api.include_router(healthcheck.router)
+        self._api.include_router(create_langchain_router(agent_module))
+
+    def __init__(
+        self: "FastAgentServer", configuration: Configuration, agent_module: AgentModule
+    ) -> None:
+        """Initialize the server.
+
+        Args:
+            configuration: The configuration.
+            agent_module: The agent module.
+        """
         self._api.title = configuration.name
+        self._prepare_api(agent_module)
 
         target = "fastagent.internal.server.server:FastAgentServer._api"
 
@@ -41,6 +52,6 @@ class FastAgentServer:
             log_enabled=True,
         )
 
-    def serve(self) -> None:
+    def serve(self: "FastAgentServer") -> None:
         """Serve the application."""
         self.server.serve()

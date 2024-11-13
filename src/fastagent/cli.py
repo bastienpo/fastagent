@@ -7,11 +7,7 @@ import typer
 from rich.console import Console
 from rich.panel import Panel
 
-from fastagent.configuration import (
-    Configuration,
-    write_configuration,
-    read_configuration,
-)
+from fastagent.configuration import Configuration
 from fastagent.internal import ModuleLoader
 from fastagent.internal.server import FastAgentServer
 
@@ -85,7 +81,7 @@ def init() -> None:
         ),
     ).ask()
 
-    write_configuration(configuration=configuration, path="fastagent.toml")
+    configuration.write(path="fastagent.toml")
 
     console.print("\n[bold green]✅ Configuration completed successfully![/bold green]")
 
@@ -95,10 +91,6 @@ def dev(
     target: str,
     host: str = "127.0.0.1",
     port: int = 8000,
-    ssl_keyfile: str | None = None,
-    ssl_certfile: str | None = None,
-    *,
-    reload: bool = True,
 ) -> None:
     """Launch a development server for your agent.
 
@@ -110,9 +102,9 @@ def dev(
 
     agent_module = ModuleLoader.load_from_string(target)
     if Path("fastagent.toml").exists():
-        configuration = read_configuration("fastagent.toml")
+        configuration = Configuration.from_file("fastagent.toml")
     elif Path(".fastagent.toml").exists():
-        configuration = read_configuration(".fastagent.toml")
+        configuration = Configuration.from_file(".fastagent.toml")
     else:
         console.print(
             "[bold red]❌ No configuration file found![/bold red]\n\n"
