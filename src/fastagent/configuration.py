@@ -5,14 +5,16 @@ from pathlib import Path
 from typing import Literal
 
 import tomli_w
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PrivateAttr
 
 
 class Project(BaseModel):
     """Project configuration."""
 
     name: str = Field(default="fastagent")
-    database: Literal["postgresql", "none"] = Field(default="none")
+    framework: Literal["langchain", "langgraph", "dspy"] = Field(default="langchain")
+    app: str = Field(default="app.main:api")
+    database: Literal["postgresql"] | None = Field(default=None)
 
 
 class Server(BaseModel):
@@ -20,33 +22,30 @@ class Server(BaseModel):
 
     port: int = Field(default=8000)
     host: str = Field(default="127.0.0.1")
-    reload: bool = Field(default=True)
+    _reload: bool = PrivateAttr(default=True)
+    _logging: bool = PrivateAttr(default=True)
+    _log_level: Literal["debug", "info", "warning", "error"] = PrivateAttr(
+        default="info"
+    )
 
 
 class Security(BaseModel):
     """Security configuration."""
 
     authentication: bool = Field(default=False)
+    ssl_cert: str | None = Field(default=None)
+    ssl_key: str | None = Field(default=None)
 
 
-class Tool(BaseModel):
-    """Tool configuration."""
-
-    framework: Literal["langchain"] = Field(default="langchain")
-
-
-class Configuration(BaseModel):
+class Config(BaseModel):
     """Configuration for the project."""
 
     project: Project = Field(default=Project())
     security: Security = Field(default=Security())
-    tool: Tool = Field(default=Tool())
     server: Server = Field(default=Server())
 
     @classmethod
-    def from_file(
-        cls: type["Configuration"], path: str = "fastagent.toml"
-    ) -> "Configuration":
+    def from_file(cls: type["Config"], path: str = "fastagent.toml") -> "Config":
         """Read the configuration from the given path.
 
         Args:
@@ -56,13 +55,13 @@ class Configuration(BaseModel):
             config_dict = tomllib.load(file)
             return cls.model_validate(config_dict)
 
-    def write(self: "Configuration", path: str = "fastagent.toml") -> None:
+    def write(self: "Config", path: str = "fastagent.toml") -> None:
         """Write the configuration to the given path.
 
         Args:
             path: The path to write the configuration to.
         """
-        config_dict = self.model_dump()
+        config_dict = self.model_dump(exclude_none=True)
 
         with Path(path).open("w") as file:
             toml_config = tomli_w.dumps(config_dict)

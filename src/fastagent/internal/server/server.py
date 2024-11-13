@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from granian.server import Granian
 from langchain_core.runnables import Runnable as LangchainRunnable
 
-from fastagent.configuration import Configuration
+from fastagent.configuration import Config
 from fastagent.integrations import create_langchain_router
 from fastagent.routers import healthcheck
 
@@ -16,11 +16,11 @@ class FastAgentServer:
 
     _api: FastAPI = FastAPI()
     _server: Granian
-    _configuration: Configuration
+    _configuration: Config
     _agent_module: AgentModule
 
     def __init__(
-        self: "FastAgentServer", configuration: Configuration, agent_module: AgentModule
+        self: "FastAgentServer", configuration: Config, agent_module: AgentModule
     ) -> None:
         """Initialize the server.
 
@@ -37,14 +37,14 @@ class FastAgentServer:
 
         self._server = Granian(
             target=_target,
-            address="127.0.0.1",
-            port=8000,
-            reload=True,
+            address=self._configuration.server.host,
+            port=self._configuration.server.port,
+            reload=self._configuration.server.reload,
             ssl_cert=None,
             ssl_key=None,
             interface="asgi",
             loop="uvloop",
-            log_enabled=True,
+            log_enabled=self._configuration.server.logging,
         )
 
     def _setup_api(self: "FastAgentServer") -> None:
