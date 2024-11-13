@@ -13,7 +13,7 @@ class Configuration(BaseModel):
 
     name: str = Field(default="fastagent")
     auth_backend: Literal["postgresql"] | None = Field(default=None)
-    agent: Literal["langchain"] | None = Field(default=None)
+    agent_framework: Literal["langchain"] | None = Field(default=None)
 
 
 def read_configuration(path: str = "fastagent.toml") -> Configuration:
