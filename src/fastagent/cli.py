@@ -4,15 +4,16 @@ from pathlib import Path
 
 import questionary
 import typer
-from granian.server import Granian
 from rich.console import Console
 from rich.panel import Panel
 
-from fastagent.app import api
-from fastagent.configuration import Configuration, write_configuration
-from fastagent.integrations import create_langchain_router
+from fastagent.configuration import (
+    Configuration,
+    write_configuration,
+    read_configuration,
+)
 from fastagent.internal import ModuleLoader
-from fastagent.routers import healthcheck
+from fastagent.internal.server import FastAgentServer
 
 app = typer.Typer(
     name="fastagent",
@@ -41,7 +42,7 @@ def init() -> None:
         return
 
     # Project name
-    configuration.project_name = questionary.text(
+    configuration.name = questionary.text(
         message="What is your project name?",
         style=questionary.Style(
             [
@@ -84,7 +85,7 @@ def init() -> None:
         ),
     ).ask()
 
-    write_configuration("fastagent.toml", configuration)
+    write_configuration(configuration=configuration, path="fastagent.toml")
 
     console.print("\n[bold green]✅ Configuration completed successfully![/bold green]")
 
@@ -94,6 +95,8 @@ def dev(
     target: str,
     host: str = "127.0.0.1",
     port: int = 8000,
+    ssl_keyfile: str | None = None,
+    ssl_certfile: str | None = None,
     *,
     reload: bool = True,
 ) -> None:
@@ -102,33 +105,33 @@ def dev(
     The server will match the configuration you have set in the `fastagent.toml` or `.fastagent.toml` file.
 
     The server will reload on code changes if the `--reload` flag is set.
-    """
+    """  # noqa: E501
     console = Console()
 
-    runnable = ModuleLoader.load_from_string(target)
-    api.include_router(create_langchain_router(runnable))
-    api.include_router(healthcheck.router)
+    agent_module = ModuleLoader.load_from_string(target)
+    if Path("fastagent.toml").exists():
+        configuration = read_configuration("fastagent.toml")
+    elif Path(".fastagent.toml").exists():
+        configuration = read_configuration(".fastagent.toml")
+    else:
+        console.print(
+            "[bold red]❌ No configuration file found![/bold red]\n\n"
+            "Please run `fastagent init` to create a configuration file."
+        )
+        return
 
-    granian = Granian(
-        target="fastagent.app:api",
-        address=host,
-        port=port,
-        reload=reload,
-        interface="asgi",
-        loop="uvloop",
-        log_enabled=True,
-    )
+    server = FastAgentServer(configuration, agent_module)
 
     # Print the running message with the target and port
     console.print(
         Panel.fit(
             f"Running FastAgent CLI in development mode 🚀 \n\n"
-            f"The application is available at [bold green]http://{host}:{port}[/bold green]",  # noqa: E501
+            f"The application   is available at [bold green]http://{host}:{port}[/bold green]",  # noqa: E501
             style="bold green",
         )
     )
 
-    granian.serve()
+    server.serve()
 
 
 @app.command()

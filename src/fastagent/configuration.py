@@ -25,7 +25,7 @@ def read_configuration(path: str = "fastagent.toml") -> Configuration:
     Returns:
         The configuration.
     """
-    with Path(path).open() as file:
+    with Path(path).open("rb") as file:
         config_dict = tomllib.load(file)
         return Configuration.model_validate(config_dict)
 
