@@ -1,3 +1,3 @@
-from .password import hash_password, verify_password
+from fastagent.internal.security.password import hash_password, verify_password
 
 __all__ = ["hash_password", "verify_password"]

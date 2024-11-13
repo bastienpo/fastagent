@@ -8,7 +8,9 @@ from granian.server import Granian
 from rich.console import Console
 from rich.panel import Panel
 
+from fastagent.app import api
 from fastagent.configuration import write_configuration
+from fastagent.routers import healthcheck
 
 app = typer.Typer()
 
@@ -83,18 +85,13 @@ def dev(
     reload: bool = False,
 ) -> None:
     """Run the FastAgent CLI in development mode."""
+    _ = target  # TODO: use module loader to load langchain api  # noqa: E501, FIX002, TD002, TD003
     console = Console()
-    if not Path("./.fastagent.toml").exists():
-        console.print(
-            Panel.fit(
-                "[bold red]❌ Configuration file not found![/bold red]",
-                style="bold red",
-            )
-        )
-        return
+
+    api.include_router(healthcheck.router)
 
     granian = Granian(
-        target=target,
+        target="fastagent.app:api",
         address=host,
         port=port,
         reload=reload,

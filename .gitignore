@@ -169,3 +169,6 @@ tls/
 *.pem
 *.key
 *.crt
+
+fastagent.toml
+.fastagent.toml
