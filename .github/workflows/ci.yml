@@ -1,4 +1,4 @@
-name: Backend CI
+name: continious-integration
 
 on:
   push:

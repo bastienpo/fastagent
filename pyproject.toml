@@ -15,7 +15,7 @@ dependencies = [
   "pydantic[email]>=2.9.2",
   "pydantic-settings>=2.6.1",
   "uvloop>=0.21.0",
-  "toml>=0.10.2",
+  "tomli-w>=1.1.0",
 ]
 
 [project.optional-dependencies]

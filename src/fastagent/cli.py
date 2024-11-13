@@ -9,7 +9,7 @@ from rich.console import Console
 from rich.panel import Panel
 
 from fastagent.app import api
-from fastagent.configuration import write_configuration
+from fastagent.configuration import Configuration, write_configuration
 from fastagent.routers import healthcheck
 
 app = typer.Typer()
@@ -20,7 +20,7 @@ def init() -> None:
     """Initialize the configuration for the project."""
     console = Console()
 
-    configuration = {}
+    configuration = Configuration()
 
     console.print(Panel.fit("Welcome to FastAgent CLI 🚀", style="bold green"))
 
@@ -29,24 +29,25 @@ def init() -> None:
         return
 
     # Project name
-    configuration["project_name"] = questionary.text(
-        "What is your project name?",
+    configuration.project_name = questionary.text(
+        message="What is your project name?",
         style=questionary.Style(
             [
                 ("qmark", "fg:blue bold"),
                 ("question", "bold"),
-                ("answer", "fg:cyan bold"),
+                ("answer", "fg: cyan bold"),
             ]
         ),
+        default=Path.cwd().name,
     ).ask()
 
     # Authentication choice
     console.print("\n[bold yellow]Authentication Backend Options:[/bold yellow] 🔐")
-    configuration["auth_backend"] = questionary.select(
-        "Choose your authentication backend:",
+    configuration.auth_backend = questionary.select(
+        message="Choose your authentication backend:",
         choices=[
             {"name": "📦 PostgreSQL", "value": "postgresql"},
-            {"name": "🚫 No Authentication", "value": "none"},
+            {"name": "🚫 No Authentication", "value": None},
         ],
         style=questionary.Style(
             [
@@ -58,8 +59,8 @@ def init() -> None:
 
     # Agent backend selection
     console.print("\n[bold yellow]Agent Backend Options:[/bold yellow] 🤖")
-    configuration["agent_backend"] = questionary.select(
-        "Choose your agent backend:",
+    configuration.agent_backend = questionary.select(
+        message="Choose your agent backend:",
         choices=[
             {"name": "🦜 LangChain", "value": "langchain"},
         ],

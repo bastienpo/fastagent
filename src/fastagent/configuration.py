@@ -1,31 +1,46 @@
 """Configuration for the project."""
 
+import tomllib
 from pathlib import Path
+from typing import Literal
 
-import toml
-from pydantic import BaseModel
+import tomli_w
+from pydantic import BaseModel, Field
 
 
 class Configuration(BaseModel):
     """Configuration for the project."""
 
-    project_name: str
-    auth_backend: str
-    agent_backend: str
+    name: str = Field(default="fastagent")
+    auth_backend: Literal["postgresql"] | None = Field(default=None)
+    agent: Literal["langchain"] | None = Field(default=None)
 
 
-def read_configuration(path: str) -> Configuration:
-    """Read the configuration from the given path."""
+def read_configuration(path: str = "fastagent.toml") -> Configuration:
+    """Read the configuration from the given path.
+
+    Args:
+        path: The path to read the configuration from.
+
+    Returns:
+        The configuration.
+    """
     with Path(path).open() as file:
-        return Configuration(**toml.load(file))
+        config_dict = tomllib.load(file)
+        return Configuration.model_validate(config_dict)
 
 
-def write_configuration(path: str, configuration: dict) -> None:
-    """Write the configuration to the given path."""
-    header = "[tool.fastagent]\n"
+def write_configuration(
+    configuration: Configuration, path: str = "fastagent.toml"
+) -> None:
+    """Write the configuration to the given path.
 
-    config = Configuration(**configuration)
+    Args:
+        path: The path to write the configuration to.
+        configuration: The configuration to write.
+    """
+    config_dict = configuration.model_dump()
 
     with Path(path).open("w") as file:
-        file.write(header)
-        toml.dump(config.model_dump(), file)
+        toml_config = tomli_w.dumps(config_dict)
+        file.write(toml_config)
