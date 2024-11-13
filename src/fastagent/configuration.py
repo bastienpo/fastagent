@@ -8,12 +8,40 @@ import tomli_w
 from pydantic import BaseModel, Field
 
 
+class Project(BaseModel):
+    """Project configuration."""
+
+    name: str = Field(default="fastagent")
+    database: Literal["postgresql", "none"] = Field(default="none")
+
+
+class Server(BaseModel):
+    """Server configuration."""
+
+    port: int = Field(default=8000)
+    host: str = Field(default="127.0.0.1")
+    reload: bool = Field(default=True)
+
+
+class Security(BaseModel):
+    """Security configuration."""
+
+    authentication: bool = Field(default=False)
+
+
+class Tool(BaseModel):
+    """Tool configuration."""
+
+    framework: Literal["langchain"] = Field(default="langchain")
+
+
 class Configuration(BaseModel):
     """Configuration for the project."""
 
-    name: str = Field(default="fastagent")
-    auth_backend: Literal["postgresql"] | None = Field(default=None)
-    agent_framework: Literal["langchain"] | None = Field(default=None)
+    project: Project = Field(default=Project())
+    security: Security = Field(default=Security())
+    tool: Tool = Field(default=Tool())
+    server: Server = Field(default=Server())
 
     @classmethod
     def from_file(

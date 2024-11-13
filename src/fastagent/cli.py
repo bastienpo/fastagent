@@ -38,7 +38,7 @@ def init() -> None:
         return
 
     # Project name
-    configuration.name = questionary.text(
+    configuration.project.name = questionary.text(
         message="What is your project name?",
         style=questionary.Style(
             [
@@ -50,10 +50,9 @@ def init() -> None:
         default=Path.cwd().name,
     ).ask()
 
-    # Authentication choice
-    console.print("\n[bold yellow]Authentication Backend Options:[/bold yellow] 🔐")
-    configuration.auth_backend = questionary.select(
-        message="Choose your authentication backend:",
+    console.print("\n[bold yellow] Database Options:[/bold yellow] 🔐")
+    configuration.project.database = questionary.select(
+        message="Choose your database:",
         choices=[
             {"name": "📦 PostgreSQL", "value": "postgresql"},
             {"name": "🚫 No Authentication", "value": None},
@@ -68,7 +67,7 @@ def init() -> None:
 
     # Agent backend selection
     console.print("\n[bold yellow]Agent Backend Options:[/bold yellow] 🤖")
-    configuration.agent_framework = questionary.select(
+    configuration.tool.framework = questionary.select(
         message="Choose your agent framework:",
         choices=[
             {"name": "🦜 LangChain", "value": "langchain"},
@@ -82,7 +81,6 @@ def init() -> None:
     ).ask()
 
     configuration.write(path="fastagent.toml")
-
     console.print("\n[bold green]✅ Configuration completed successfully![/bold green]")
 
 
