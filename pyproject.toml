@@ -11,7 +11,7 @@ classifiers = [
 dependencies = [
   "argon2-cffi>=23.1.0",
   "fastapi>=0.115.4",
-  "granian>=1.6.3",
+  "granian[reload]>=1.6.3",
   "pydantic[email]>=2.9.2",
   "pydantic-settings>=2.6.1",
   "uvloop>=0.21.0",
@@ -22,13 +22,16 @@ dependencies = [
 all = [
   "asyncpg>=0.30.0",
   "langserve[server]>=0.3.0",
+  "langgraph>=0.2.47",
+  "dspy-ai>=2.5.29",
   "typer>=0.13.0",
   "questionary>=2.0.1",
-  "granian[reload]>=1.6.3",
 ]
-cli = ["typer>=0.13.0", "questionary>=2.0.1", "granian[reload]>=1.6.3"]
+cli = ["typer>=0.13.0", "questionary>=2.0.1"]
 postgres = ["asyncpg>=0.30.0"]
 langchain = ["langserve[server]>=0.3.0"]
+langgraph = ["langgraph>=0.2.47"]
+dspy = ["dspy-ai>=2.5.29"]
 
 [dependency-groups]
 dev = ["pytest>=8.3.3"]

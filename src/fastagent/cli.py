@@ -1,7 +1,7 @@
 """FastAgent CLI."""
 
 from pathlib import Path
-
+from typing import Literal
 import questionary
 import typer
 from rich.console import Console
@@ -18,7 +18,7 @@ app = typer.Typer(
 
 
 @app.command()
-def init() -> None:
+def init(name: str | None = None, template: str | None = None) -> None:
     """Initialize the configuration for the project.
 
     This command will prompt you for the project configuration.
@@ -37,35 +37,41 @@ def init() -> None:
         console.print("\n[bold red]❌ Configuration file already exists![/bold red]")
         return
 
-    # Project name
-    config.project.name = questionary.text(
-        message="What is your project name?",
-        style=questionary.Style(
-            [
-                ("qmark", "fg:blue bold"),
-                ("question", "bold"),
-                ("answer", "fg: cyan bold"),
-            ]
-        ),
-        default=Path.cwd().name,
-    ).ask()
+    if name is None:
+        # Project name
+        config.project.name = questionary.text(
+            message="What is your project name?",
+            style=questionary.Style(
+                [
+                    ("qmark", "fg:blue bold"),
+                    ("question", "bold"),
+                    ("answer", "fg: cyan bold"),
+                ]
+            ),
+            default=Path.cwd().name,
+        ).ask()
+    else:
+        config.project.name = name
 
-    # Agent backend selection
-    console.print("\n[bold yellow]Agent Backend Options:[/bold yellow] 🤖")
-    config.project.framework = questionary.select(
-        message="Choose your agent framework:",
-        choices=[
-            {"name": "LangChain", "value": "langchain"},
-            {"name": "LangGraph", "value": "langgraph"},
-            {"name": "DsPy", "value": "dspy"},
-        ],
-        style=questionary.Style(
-            [
-                ("selected", "fg:cyan bold"),
-                ("pointer", "fg:green bold"),
-            ]
-        ),
-    ).ask()
+    if template is None:
+        # Agent backend selection
+        console.print("\n[bold yellow]Agent Backend Options:[/bold yellow] 🤖")
+        config.project.framework = questionary.select(
+            message="Choose your agent framework:",
+            choices=[
+                {"name": "LangChain", "value": "langchain"},
+                # {"name": "LangGraph", "value": "langgraph"},  # noqa: ERA001
+                # {"name": "DsPy", "value": "dspy"},  # noqa: ERA001
+            ],
+            style=questionary.Style(
+                [
+                    ("selected", "fg:cyan bold"),
+                    ("pointer", "fg:green bold"),
+                ]
+            ),
+        ).ask()
+    else:
+        config.project.framework = "langchain"
 
     config.write(path="fastagent.toml")
     console.print("\n[bold green]✅ Configuration completed successfully![/bold green]")
