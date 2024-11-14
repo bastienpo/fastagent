@@ -116,7 +116,7 @@ class FastAgentServer:
 
         async def startup() -> None:
             """Startup the application."""
-            if self._configuration.project.database == "postgresql":
+            if self._configuration.storage.database == "postgresql":
                 self._api.async_pool = await init_database(test_dsn)
                 logger.info("Connection to database opened")
 
@@ -127,7 +127,7 @@ class FastAgentServer:
 
         async def shutdown() -> None:
             """Shutdown the application."""
-            if self._configuration.project.database == "postgresql":
+            if self._configuration.storage.database == "postgresql":
                 await self._api.async_pool.close()
                 logger.info("Connection to database closed")
 

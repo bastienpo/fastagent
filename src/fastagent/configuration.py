@@ -21,7 +21,14 @@ class Project(BaseModel):
     name: str = Field(default="fastagent")
     framework: Literal["langchain", "langgraph", "dspy"] = Field(default="langchain")
     app: str = Field(default="app.main:api")
+
+
+class Storage(BaseModel):
+    """Storage configuration."""
+
     database: Literal["postgresql"] | None = Field(default=None)
+    host: str | None = Field(default=None)
+    port: int | None = Field(default=None)
 
 
 class Server(BaseModel):
@@ -47,7 +54,7 @@ class Security(BaseModel):
     Currently only supports Postgresql.
     """
 
-    authentication: bool = Field(default=False)
+    authentication: Literal["stateful-postgresql"] | None = Field(default=None)
     ssl_cert: str | None = Field(default=None)
     ssl_key: str | None = Field(default=None)
 
@@ -64,6 +71,7 @@ class Config(BaseModel):
 
     project: Project = Field(default=Project())
     security: Security = Field(default=Security())
+    storage: Storage = Field(default=Storage())
     server: Server = Field(default=Server())
 
     @classmethod
@@ -87,7 +95,8 @@ class Config(BaseModel):
             path: The path to write the configuration to.
         """
         config_dict = self.model_dump(
-            exclude_none=True, exclude=["reload", "logging", "log_level", "environment"]
+            exclude_none=True,
+            exclude=["reload", "logging", "log_level", "environment"],
         )
 
         with Path(path).open("w") as file:
