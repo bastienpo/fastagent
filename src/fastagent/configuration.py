@@ -9,7 +9,14 @@ from pydantic import BaseModel, Field, PrivateAttr
 
 
 class Project(BaseModel):
-    """Project configuration."""
+    """Project configuration.
+
+    User configuration for the project with the project name, framework and app.
+
+    App is the entrypoint to the application in the format `module:attribute`.
+
+    For langchain this is typically `app.main:chain`. where chain is the LangChain Runnable.
+    """  # noqa: E501
 
     name: str = Field(default="fastagent")
     framework: Literal["langchain", "langgraph", "dspy"] = Field(default="langchain")
@@ -18,7 +25,10 @@ class Project(BaseModel):
 
 
 class Server(BaseModel):
-    """Server configuration."""
+    """Server configuration.
+
+    Main configuration for granian server.
+    """
 
     port: int = Field(default=8000)
     host: str = Field(default="127.0.0.1")
@@ -30,7 +40,14 @@ class Server(BaseModel):
 
 
 class Security(BaseModel):
-    """Security configuration."""
+    """Security configuration.
+
+    Configuration for the authentication and support for HTTPS.
+
+    Choosing a authentication will require a database or backend service.
+
+    Currently only supports Postgresql.
+    """
 
     authentication: bool = Field(default=False)
     ssl_cert: str | None = Field(default=None)
@@ -38,7 +55,16 @@ class Security(BaseModel):
 
 
 class Config(BaseModel):
-    """Configuration for the project."""
+    """Configuration for the project.
+
+    Pydantic model for the configuration holding all the configuration options.
+
+    Configuration is read from a TOML file and validated against the Pydantic model.
+    """
+
+    _environment: Literal["development", "production"] = PrivateAttr(
+        default="development"
+    )
 
     project: Project = Field(default=Project())
     security: Security = Field(default=Security())
@@ -50,6 +76,9 @@ class Config(BaseModel):
 
         Args:
             path: The path to read the configuration from.
+
+        Returns:
+            The configuration object.
         """
         with Path(path).open("rb") as file:
             config_dict = tomllib.load(file)

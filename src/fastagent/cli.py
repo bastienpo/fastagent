@@ -86,8 +86,7 @@ def dev() -> None:
     console = Console()
 
     config = Config.from_file(path="fastagent.toml")
-    agent_module = ModuleLoader.load_from_string(config.project.app)
-    server = FastAgentServer(config, agent_module)
+    server = FastAgentServer(configuration=config)
 
     # Print the running message with the target and port
     console.print(
