@@ -1,14 +1,13 @@
 """FastAgent CLI."""
 
 from pathlib import Path
-from typing import Literal
+
 import questionary
 import typer
 from rich.console import Console
 from rich.panel import Panel
 
 from fastagent.configuration import Config
-from fastagent.internal import ModuleLoader
 from fastagent.internal.server import FastAgentServer
 
 app = typer.Typer(

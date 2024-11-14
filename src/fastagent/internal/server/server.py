@@ -1,8 +1,6 @@
 """The FastAgent server."""
 
 import logging
-from collections.abc import AsyncGenerator
-from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from granian.server import Granian
@@ -54,12 +52,13 @@ class FastAgentServer:
             target=_target,
             address=self._configuration.server.host,
             port=self._configuration.server.port,
-            reload=self._configuration.server._reload,
+            reload=self._configuration.server.reload,
             ssl_cert=None,
             ssl_key=None,
             interface="asgi",
             loop="uvloop",
-            log_enabled=self._configuration.server._logging,
+            log_enabled=self._configuration.server.logging,
+            log_level=self._configuration.server.log_level,
         )
 
     def _setup_api(self: "FastAgentServer") -> None:

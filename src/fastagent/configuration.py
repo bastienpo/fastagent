@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Literal
 
 import tomli_w
-from pydantic import BaseModel, Field, PrivateAttr
+from pydantic import BaseModel, Field
 
 
 class Project(BaseModel):
@@ -32,11 +32,9 @@ class Server(BaseModel):
 
     port: int = Field(default=8000)
     host: str = Field(default="127.0.0.1")
-    _reload: bool = PrivateAttr(default=True)
-    _logging: bool = PrivateAttr(default=True)
-    _log_level: Literal["debug", "info", "warning", "error"] = PrivateAttr(
-        default="info"
-    )
+    reload: bool = Field(default=True)
+    logging: bool = Field(default=True)
+    log_level: Literal["debug", "info", "warning", "error"] = Field(default="info")
 
 
 class Security(BaseModel):
@@ -62,9 +60,7 @@ class Config(BaseModel):
     Configuration is read from a TOML file and validated against the Pydantic model.
     """
 
-    _environment: Literal["development", "production"] = PrivateAttr(
-        default="development"
-    )
+    environment: Literal["development", "production"] = Field(default="development")
 
     project: Project = Field(default=Project())
     security: Security = Field(default=Security())
@@ -90,7 +86,9 @@ class Config(BaseModel):
         Args:
             path: The path to write the configuration to.
         """
-        config_dict = self.model_dump(exclude_none=True)
+        config_dict = self.model_dump(
+            exclude_none=True, exclude=["reload", "logging", "log_level", "environment"]
+        )
 
         with Path(path).open("w") as file:
             toml_config = tomli_w.dumps(config_dict)
