@@ -12,6 +12,7 @@ from fastagent.dependencies import require_auth_dependency
 from fastagent.integrations import create_langchain_router
 from fastagent.internal import ModuleLoader
 from fastagent.internal.data.database import init_database
+from fastagent.internal.log import setup_logger
 from fastagent.internal.server import (
     AuthenticationMiddleware,
     RequestLoggingMiddleware,
@@ -19,15 +20,13 @@ from fastagent.internal.server import (
 )
 from fastagent.routers import healthcheck, tokens, users
 
-logging.basicConfig(filename="logging.conf")
-logger = logging.getLogger(__name__)
-
 
 class FastAgentServer:
     """The FastAgent server ."""
 
     _api: FastAPI = FastAPI()
     _server: Granian
+    _logger: logging.Logger = setup_logger(level=logging.INFO)
     configuration: Config
     environment: Literal["dev", "prod"]
 
@@ -58,7 +57,7 @@ class FastAgentServer:
         # Target is the ASGI application created in the same file.
         # This is a workaround to make granian work with FastAPI.
         # This could lead to issues in the future.
-        target = "fastagent.internal.server.server:FastAgentServer._api"
+        target = "fastagent.server:FastAgentServer._api"
 
         self._server = Granian(
             target=target,
@@ -67,7 +66,7 @@ class FastAgentServer:
             reload=self.environment == "dev",
             interface="asgi",
             loop="uvloop",
-            log_enabled=self.configuration.server.logging,
+            log_enabled=False,
             log_level=self.configuration.server.log_level,
         )
 
@@ -108,7 +107,7 @@ class FastAgentServer:
         Setup the middleware according to the configuration.
         """
         # Default middlewares
-        self._api.add_middleware(RequestLoggingMiddleware, logger=logger)
+        self._api.add_middleware(RequestLoggingMiddleware, logger=self._logger)
 
         # Add an authentication middleware if authentication is enabled
         if self.configuration.security.authentication:
@@ -122,9 +121,11 @@ class FastAgentServer:
 
         async def startup() -> None:
             """Startup the application."""
+            self._logger.info("Starting application")
+
             if self.configuration.storage.database == "postgresql":
                 self._api.async_pool = await init_database(test_dsn)
-                logger.info("Connection to database opened")
+                self._logger.info("Connection to database established")
 
         return startup
 
@@ -135,7 +136,9 @@ class FastAgentServer:
             """Shutdown the application."""
             if self.configuration.storage.database == "postgresql":
                 await self._api.async_pool.close()
-                logger.info("Connection to database closed")
+                self._logger.info("Connection to database closed")
+
+            self._logger.info("Shutting down server")
 
         return shutdown
 

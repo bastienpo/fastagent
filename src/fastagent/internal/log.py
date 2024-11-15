@@ -1,6 +1,7 @@
 """Utility functions."""
 
 import logging
+import sys
 from datetime import UTC, datetime
 
 
@@ -33,3 +34,32 @@ class LoggingFormatter(logging.Formatter):
             )
 
         return log_msg
+
+
+def setup_logger(level: int = logging.INFO) -> logging.Logger:
+    """Setup logging for the application.
+
+    Args:
+        level: The logging level to use.
+
+    Returns:
+        The root logger.
+    """
+    # Disable Granian's default logging
+    root_logger = logging.getLogger(__name__)
+    root_logger.setLevel(level)
+
+    custom_logger = logging.getLogger("_fastagent")
+    custom_logger.setLevel(level)
+    custom_logger.propagate = False
+
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(level)
+
+    formatter = LoggingFormatter()
+    console_handler.setFormatter(formatter)
+
+    root_logger.addHandler(console_handler)
+    custom_logger.addHandler(console_handler)
+
+    return root_logger

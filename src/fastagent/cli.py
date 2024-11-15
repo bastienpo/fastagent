@@ -8,7 +8,7 @@ from rich.console import Console
 from rich.panel import Panel
 
 from fastagent.configuration import Config
-from fastagent.internal.server import FastAgentServer
+from fastagent.server import FastAgentServer
 
 app = typer.Typer(
     name="fastagent",
