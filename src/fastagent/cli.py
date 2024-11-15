@@ -85,12 +85,12 @@ def dev() -> None:
     console = Console()
 
     config = Config.from_file(path="fastagent.toml")
-    server = FastAgentServer(configuration=config)
+    server = FastAgentServer(configuration=config, environment="dev")
 
     # Print the running message with the target and port
     console.print(
         Panel.fit(
-            f"Running FastAgent CLI in development mode 🚀 \n\n"
+            f"Running fastagent server in development mode 🚀 \n\n"
             f"The application is available at [bold green]http://{config.server.host}:{config.server.port}[/bold green]",  # noqa: E501
             style="bold green",
         )
@@ -102,6 +102,20 @@ def dev() -> None:
 @app.command()
 def run() -> None:
     """Run the FastAgent CLI."""
+    console = Console()
+
+    config = Config.from_file(path="fastagent.toml")
+    server = FastAgentServer(configuration=config, environment="prod")
+
+    console.print(
+        Panel.fit(
+            f"Running fastagent server in production mode 🚀 \n\n"
+            f"The application is available at [bold green]http://{config.server.host}:{config.server.port}[/bold green]",  # noqa: E501
+            style="bold blue",
+        )
+    )
+
+    server.serve()
 
 
 @app.command()

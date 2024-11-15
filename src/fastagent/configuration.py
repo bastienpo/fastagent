@@ -39,7 +39,7 @@ class Server(BaseModel):
 
     port: int = Field(default=8000)
     host: str = Field(default="127.0.0.1")
-    reload: bool = Field(default=True)
+    workers: int = Field(default=1)
     logging: bool = Field(default=True)
     log_level: Literal["debug", "info", "warning", "error"] = Field(default="info")
 
@@ -66,8 +66,6 @@ class Config(BaseModel):
 
     Configuration is read from a TOML file and validated against the Pydantic model.
     """
-
-    environment: Literal["development", "production"] = Field(default="development")
 
     project: Project = Field(default=Project())
     security: Security = Field(default=Security())
@@ -96,7 +94,7 @@ class Config(BaseModel):
         """
         config_dict = self.model_dump(
             exclude_none=True,
-            exclude=["reload", "logging", "log_level", "environment"],
+            exclude=["reload", "logging", "log_level"],
         )
 
         with Path(path).open("w") as file:
