@@ -49,6 +49,24 @@ def is_anonymous(user: UserModel) -> bool:
     return user == AnnonymousUser or user.id == 0
 
 
+async def create_user_table(conn: Connection) -> None:
+    """Create the user table."""
+    query = """
+        CREATE EXTENSION IF NOT EXISTS citext;
+
+        CREATE TABLE IF NOT EXISTS fastagent_users (
+            id bigserial PRIMARY KEY,
+            created_at timestamp(0) with time zone NOT NULL DEFAULT NOW(),
+            name text NOT NULL,
+            email citext UNIQUE NOT NULL,
+            password_hash bytea NOT NULL,
+            version integer NOT NULL DEFAULT 1
+        );
+    """
+
+    await conn.execute(query, timeout=3)
+
+
 async def insert_user(conn: Connection, user: UserCreate) -> None:
     """Insert a user into the database.
 
@@ -57,7 +75,7 @@ async def insert_user(conn: Connection, user: UserCreate) -> None:
         user: The user to insert.
     """
     query = """
-    INSERT INTO users (name, email, password_hash)
+    INSERT INTO fastagent_users (name, email, password_hash)
         VALUES ($1, $2, $3)
         RETURNING id, created_at
     """
@@ -72,18 +90,18 @@ async def get_user_for_token(conn: Connection, scope: Scope, token: str) -> User
     token_hash = hash_token(token)
 
     query = """
-    SELECT users.id,
-        users.created_at,
-        users.name,
-        users.email,
-        users.password_hash,
-        users.version
-        FROM users
-        INNER JOIN tokens
-            ON users.id = tokens.user_id
-        WHERE tokens.hash = $1
-            AND tokens.scope = $2
-            AND tokens.expiry > $3
+    SELECT fastagent_users.id,
+        fastagent_users.created_at,
+        fastagent_users.name,
+        fastagent_users.email,
+        fastagent_users.password_hash,
+        fastagent_users.version
+        FROM fastagent_users
+        INNER JOIN fastagent_tokens
+            ON fastagent_users.id = fastagent_tokens.user_id
+        WHERE fastagent_tokens.hash = $1
+            AND fastagent_tokens.scope = $2
+            AND fastagent_tokens.expiry > $3
     """
 
     row = await conn.fetchrow(query, token_hash, scope, datetime.now(UTC), timeout=3)
@@ -99,7 +117,7 @@ async def get_user_by_email(conn: Connection, email: EmailStr) -> UserModel:
     """Get a user by email."""
     query = """
     SELECT id, created_at, name, email, password_hash, version
-        FROM users
+        FROM fastagent_users
         WHERE email = $1
     """
     row = await conn.fetchrow(query, email, timeout=3)

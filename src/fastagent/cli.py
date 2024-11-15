@@ -1,5 +1,6 @@
 """FastAgent CLI."""
 
+import asyncio
 from pathlib import Path
 
 import questionary
@@ -8,6 +9,7 @@ from rich.console import Console
 from rich.panel import Panel
 
 from fastagent.configuration import Config
+from fastagent.internal.data import setup_postgresql_database
 from fastagent.server import FastAgentServer
 
 app = typer.Typer(
@@ -58,7 +60,7 @@ def init(name: str | None = None, template: str | None = None) -> None:
         config.project.framework = questionary.select(
             message="Choose your agent framework:",
             choices=[
-                {"name": "LangChain", "value": "langchain"},
+                {"name": "🦜️ LangChain", "value": "langchain"},
                 # {"name": "LangGraph", "value": "langgraph"},  # noqa: ERA001
                 # {"name": "DsPy", "value": "dspy"},  # noqa: ERA001
             ],
@@ -74,6 +76,37 @@ def init(name: str | None = None, template: str | None = None) -> None:
 
     config.write(path="fastagent.toml")
     console.print("\n[bold green]✅ Configuration completed successfully![/bold green]")
+
+
+@app.command()
+def setup() -> None:
+    """Setup the project database. Applies migrations if needed.
+
+    This command will create the user and token tables in the database if they don't exist.
+    """  # noqa: E501
+    console = Console()
+
+    console.print("[bold green]Setting up the project...[/bold green]")
+
+    try:
+        config = Config.from_file(path="fastagent.toml")
+    except FileNotFoundError:
+        console.print("[bold red]❌ Configuration file not found![/bold red]")
+        return
+
+    # TODO: Remove this once we have a proper way to get the DSN from the configuration  # noqa: E501, FIX002, TD002, TD003
+    test_dsn = "postgresql://postgres:postgres@localhost:5432/fastagent?sslmode=disable"
+
+    if (
+        config.storage.database
+        and config.security.authentication == "stateful-postgresql"
+    ):
+        console.print(
+            f"[bold green]Setting up the user and token tables in the {config.storage.database} database...[/bold green]"  # noqa: E501
+        )
+
+        if config.storage.database == "postgresql":
+            asyncio.run(setup_postgresql_database(test_dsn))
 
 
 @app.command()

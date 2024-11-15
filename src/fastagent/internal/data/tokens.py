@@ -42,6 +42,19 @@ class TokenModel(BaseModel):
     scope: Scope
 
 
+async def create_token_table(conn: Connection) -> None:
+    """Create the token table."""
+    query = """
+    CREATE TABLE IF NOT EXISTS tokens (
+        hash bytea PRIMARY KEY,
+        user_id bigint NOT NULL REFERENCES fastagent_users ON DELETE CASCADE,
+        expiry timestamp(0) with time zone NOT NULL,
+        scope text NOT NULL
+    );
+    """
+    await conn.execute(query, timeout=3)
+
+
 def hash_token(token: str) -> SecretBytes:
     """Hash a token using sha3_256."""
     return hashlib.sha3_256(token.encode("utf-8")).digest()
