@@ -1,0 +1,144 @@
+{
+  "lockfile-version": 1,
+  "manifest": {
+    "version": 1,
+    "install": {
+      "hey": {
+        "pkg-path": "hey"
+      }
+    },
+    "hook": {},
+    "profile": {},
+    "options": {
+      "systems": [
+        "aarch64-darwin",
+        "aarch64-linux",
+        "x86_64-darwin",
+        "x86_64-linux"
+      ],
+      "allow": {
+        "licenses": []
+      },
+      "semver": {},
+      "cuda-detection": false
+    }
+  },
+  "packages": [
+    {
+      "attr_path": "hey",
+      "broken": false,
+      "derivation": "/nix/store/cwn25xdl6mkw0x2s53kg93vr2i06q3nk-hey-0.1.4.drv",
+      "description": "HTTP load generator, ApacheBench (ab) replacement",
+      "install_id": "hey",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=dc460ec76cbff0e66e269457d7b728432263166c",
+      "name": "hey-0.1.4",
+      "pname": "hey",
+      "rev": "dc460ec76cbff0e66e269457d7b728432263166c",
+      "rev_count": 706477,
+      "rev_date": "2024-11-11T10:11:37Z",
+      "scrape_date": "2024-11-15T03:58:27Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.1.4",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/kfpsk00fyswacf43nrqz48vdjf69yizp-hey-0.1.4"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "hey",
+      "broken": false,
+      "derivation": "/nix/store/ibydcb00dhnjrcpxpj8x2cn5jd6br8jv-hey-0.1.4.drv",
+      "description": "HTTP load generator, ApacheBench (ab) replacement",
+      "install_id": "hey",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=dc460ec76cbff0e66e269457d7b728432263166c",
+      "name": "hey-0.1.4",
+      "pname": "hey",
+      "rev": "dc460ec76cbff0e66e269457d7b728432263166c",
+      "rev_count": 706477,
+      "rev_date": "2024-11-11T10:11:37Z",
+      "scrape_date": "2024-11-15T03:58:27Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.1.4",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/5k7vbybp41h95lqvl4zwycxkkq83rg5v-hey-0.1.4"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "hey",
+      "broken": false,
+      "derivation": "/nix/store/3s878qd2z12asrmbqrgl2by45s22piw5-hey-0.1.4.drv",
+      "description": "HTTP load generator, ApacheBench (ab) replacement",
+      "install_id": "hey",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=dc460ec76cbff0e66e269457d7b728432263166c",
+      "name": "hey-0.1.4",
+      "pname": "hey",
+      "rev": "dc460ec76cbff0e66e269457d7b728432263166c",
+      "rev_count": 706477,
+      "rev_date": "2024-11-11T10:11:37Z",
+      "scrape_date": "2024-11-15T03:58:27Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.1.4",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/sxadqlq5mxsgc408c8fd7yj6mfh8m63j-hey-0.1.4"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "hey",
+      "broken": false,
+      "derivation": "/nix/store/yv9cv8adbaac1gdd9s90b5g70zgivsar-hey-0.1.4.drv",
+      "description": "HTTP load generator, ApacheBench (ab) replacement",
+      "install_id": "hey",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=dc460ec76cbff0e66e269457d7b728432263166c",
+      "name": "hey-0.1.4",
+      "pname": "hey",
+      "rev": "dc460ec76cbff0e66e269457d7b728432263166c",
+      "rev_count": 706477,
+      "rev_date": "2024-11-11T10:11:37Z",
+      "scrape_date": "2024-11-15T03:58:27Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.1.4",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/2wrbrlbf2vi0j7fba90lx8szb11fnhmn-hey-0.1.4"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    }
+  ]
+}

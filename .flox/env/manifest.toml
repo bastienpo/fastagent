@@ -1,0 +1,29 @@
+version = 1
+
+[install]
+hey.pkg-path = "hey"
+
+[vars]
+# message = "Howdy"
+
+[hook]
+# on-activate = '''
+#   # Set variables, create files and directories
+#   venv_dir="$(mktemp -d)"
+#   export venv_dir
+#
+#   # Perform initialization steps, e.g. create a python venv
+#   python -m venv "$venv_dir"
+# '''
+
+[profile]
+# common = '''
+#   echo "it's gettin' flox in here"
+# '''
+
+[services]
+# postgres.command = "postgres --config-file=pg.conf"
+
+[options]
+systems = ["aarch64-darwin", "aarch64-linux", "x86_64-darwin", "x86_64-linux"]
+cuda-detection = false
