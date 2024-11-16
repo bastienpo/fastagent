@@ -149,8 +149,3 @@ def run() -> None:
     )
 
     server.serve()
-
-
-@app.command()
-def build() -> None:
-    """Build the FastAgent CLI."""

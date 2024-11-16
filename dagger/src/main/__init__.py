@@ -9,7 +9,7 @@ class Pipeline:
     """Pipeline class."""
 
     async def _get_ruff_container(
-        self, directory: dagger.Directory
+        self, directory: dagger.Directory, config: dagger.File
     ) -> dagger.Container:
         return (
             dag.container()
@@ -18,25 +18,57 @@ class Pipeline:
             .with_env_variable("UV_LINK_MODE", "copy")
             .with_mounted_directory("src", directory)
             .with_workdir("src")
+            .with_mounted_file(".ruff.toml", config)
             .with_exec(["uv", "tool", "install", "ruff"])
         )
 
     @function
-    async def format(self, directory: dagger.Directory) -> str:
-        """Formats the files in the provided Directory."""
-        ruff_container = await self._get_ruff_container(directory)
+    async def format(
+        self, directory: dagger.Directory, config: dagger.File, output_format: str
+    ) -> str:
+        """Formats the files in the provided Directory.
+
+        Output format can be found in ruff documentation.
+        """
+        ruff_container = await self._get_ruff_container(directory, config)
 
         return await ruff_container.with_exec(
-            ["uv", "tool", "run", "ruff", "format", "."]
+            [
+                "uv",
+                "tool",
+                "run",
+                "ruff",
+                "format",
+                ".",
+                "--config",
+                ".ruff.toml",
+                "--check",
+            ]
         ).stdout()
 
     @function
-    async def lint(self, directory: dagger.Directory) -> str:
-        """Returns lines that match a pattern in the files of the provided Directory."""
-        ruff_container = await self._get_ruff_container(directory)
+    async def lint(
+        self, directory: dagger.Directory, config: dagger.File, output_format: str
+    ) -> str:
+        """Returns lines that match a pattern in the files of the provided Directory.
+
+        Output format can be found in ruff documentation.
+        """
+        ruff_container = await self._get_ruff_container(directory, config)
 
         return await ruff_container.with_exec(
-            ["uv", "tool", "run", "ruff", "check", "."]
+            [
+                "uv",
+                "tool",
+                "run",
+                "ruff",
+                "check",
+                ".",
+                "--config",
+                ".ruff.toml",
+                "--output-format",
+                output_format,
+            ]
         ).stdout()
 
     @function
