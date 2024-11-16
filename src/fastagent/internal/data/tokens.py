@@ -45,7 +45,7 @@ class TokenModel(BaseModel):
 async def create_token_table(conn: Connection) -> None:
     """Create the token table."""
     query = """
-    CREATE TABLE IF NOT EXISTS tokens (
+    CREATE TABLE IF NOT EXISTS fastagent_tokens (
         hash bytea PRIMARY KEY,
         user_id bigint NOT NULL REFERENCES fastagent_users ON DELETE CASCADE,
         expiry timestamp(0) with time zone NOT NULL,
@@ -98,7 +98,7 @@ async def insert_token(conn: Connection, token: TokenModel) -> None:
         token: The token model.
     """
     query = """
-    INSERT INTO tokens (hash, user_id, expiry, scope)
+    INSERT INTO fastagent_tokens (hash, user_id, expiry, scope)
     VALUES ($1, $2, $3, $4)
     """
 
@@ -141,7 +141,7 @@ async def delete_all_for_user(conn: Connection, user_id: int, scope: Scope) -> N
         scope: The scope of the tokens to delete.
     """
     query = """
-    DELETE FROM tokens WHERE scope = $1 AND user_id = $2
+    DELETE FROM fastagent_tokens WHERE scope = $1 AND user_id = $2
     """
 
     await conn.execute(query, scope, user_id, timeout=3)

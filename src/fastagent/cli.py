@@ -95,7 +95,7 @@ def setup() -> None:
         return
 
     # TODO: Remove this once we have a proper way to get the DSN from the configuration  # noqa: E501, FIX002, TD002, TD003
-    test_dsn = "postgresql://postgres:postgres@localhost:5432/fastagent?sslmode=disable"
+    test_dsn = "postgresql://postgres:postgres@localhost:5432/fastagent"
 
     if (
         config.storage.database
