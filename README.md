@@ -6,7 +6,7 @@ fastagent: a tool making it easy to ship your agent to production
 
 <h3>
 
-[Documentation](https://github.com/bastienpo/fastagent)
+[Documentation](https://fastagent.gitbook.io)
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/bastienpo/fastagent?style=social)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/bastienpo/fastagent/ci.yml)
