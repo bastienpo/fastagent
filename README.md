@@ -19,7 +19,7 @@ fastagent: a tool making it easy to ship your agent to production
 ---
 
 > [!Warning]
-> This project is still under development. This is a side project that I decided to start while finding that shipping an agent to production can be a pain.
+> FastAgent is currently under **active development** and in alpha stage. It currently lacks SSL and CORS security features, as well as comprehensive testing needed for production deployment.
 
 ## Installation
 
@@ -29,52 +29,69 @@ You can install the project using pip: (Available on PyPI soon)
 pip install git+https://github.com/bastienpo/fastagent.git
 ```
 
-## Usage
+## How to use the project
 
-The project project is designed to be used as a cli tool to initialize your project.
+First, create a simple LangChain application.
 
-You can start by creating a fastagent configuration file (fastagent.toml or .fastagent.toml in your project root).
+Let's create an app.py file with the simplest langchain runnable you can make, consisting of just a large language model.
+
+```python
+# pip install -qU langchain-mistralai and requires MISTRAL_API_KEY in to be set
+from langchain_mistralai import ChatMistralAI
+
+chain = ChatMistralAI(model="ministral-3b-latest")
+```
+
+Then, you need to initialize a fastagent configuration file (fastagent.toml) using the following command:
 
 ```bash
 fastagent init
 ```
-> ![Note]
-> This command will prompt you for the project configuration.
+You will need to update the app field in the project section to match the path of your application in the form:
 
-When the configuration is done, you can start the development server:
+`<module_path>:<module_attribute>` in you case it would be `myapplication.app:chain`
 
-```bash
-fastagent dev
-```
-The command will start the development server on `localhost:8000` with reload on code changes and logging to the console.
-
-When you are ready to ship, you can start the production server:
+If you decided to use a database in your configuration, you can use the `setup` command to create the tables and setup the database.
 
 ```bash
-fastagent run
+fastagent setup
 ```
 
-Or decide to build an optimized version of your application that you can serve anywhere using docker:
+When you are ready to develop or ship, you can start the production server:
 
 ```bash
-fastagent build
+fastagent dev # fastagent run
 ```
+
+The difference between the `dev` and `run` command is that `dev` will reload the server on code changes and log to the console, while `run` will build a docker image and serve the application.
 
 ## Features
 
 This is the current roadmap for the project:
 
-- [x] Langchain (langserve) integration (additional integrations with langgraph)
-- [ ] Granian configuration
-- [ ] Authentication and Authorization (admin + user)
-- [ ] CORS and other middlewares configuration
-- [ ] Support for file uploads
-- [ ] Dspy integration
-- [ ] Monitoring and observability (Langfuse, Posthog, etc.)
+- The project allows to setup a simple server for your agent. It only support langchain and postgresql to store your conversations and authentication data.
+- It allows to setup a simple token based authentication and authorization.
+- You can configure different middlewares CORS, Authorization and Rate limiting.
+
+## What's next?
+
+> [!Note]
+> This project is still under active development and design is subject to change. I'm doing it only as a personal project because I was curious about how to ship an agent to production. Feel free to contribute or give feedback. I'm really open to any suggestion.
+
+Near future:
+- Add end-to-end testing of the project for langchain and langgraph.
+- Add a permission system.
+- Add stateless authentication.
+- Add support for more databases (SQLite in particular).
+
+
+Long term:
+- Simplify the integration of monitoring and observability tools (Langfuse, Phoenix)
+- Add support for Dspy and other frameworks.
 
 ## Resources
 
-Some resources about the dependencies used for the project.
+Some resources about the dependencies used for the project and thanks to the maintainers of the projects for their work.
 
 - [FastAPI](https://fastapi.tiangolo.com/)
 - [Granian](https://granian.dev/)
