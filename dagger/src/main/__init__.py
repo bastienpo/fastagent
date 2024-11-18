@@ -23,9 +23,7 @@ class Pipeline:
         )
 
     @function
-    async def format(
-        self, directory: dagger.Directory, config: dagger.File, output_format: str
-    ) -> str:
+    async def format(self, directory: dagger.Directory, config: dagger.File) -> str:
         """Formats the files in the provided Directory.
 
         Output format can be found in ruff documentation.

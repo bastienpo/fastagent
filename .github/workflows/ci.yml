@@ -19,7 +19,7 @@ jobs:
         with:
           version: "0.14.0"
           verb: call
-          args: format --directory ./src --config ./.ruff.toml --output-format github
+          args: format --directory ./src --config ./.ruff.toml
 
   lint:
     name: Lint (ruff)
