@@ -27,6 +27,7 @@ class Storage(BaseModel):
     """Storage configuration."""
 
     database: Literal["postgresql"] | None = Field(default=None)
+    name: str | None = Field(default=None)
     host: str | None = Field(default=None)
     port: int | None = Field(default=None)
 

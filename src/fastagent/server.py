@@ -19,6 +19,7 @@ from fastagent.internal.server import (
     RequestLoggingMiddleware,
     http_exception_handler,
 )
+from fastagent.internal.settings import Settings
 from fastagent.routers import healthcheck, tokens, users
 
 
@@ -137,8 +138,12 @@ class FastAgentServer:
 
     def startup_lifespan(self: "FastAgentServer") -> None:
         """Startup the lifespan of the application."""
-        test_dsn = (
-            "postgresql://postgres:postgres@localhost:5432/fastagent?sslmode=disable"
+        # user and password must be set in the environment variables (not in the config)
+        settings = Settings()
+        dsn = settings.database.get_dsn(
+            name=self.configuration.storage.name,
+            host=self.configuration.storage.host,
+            port=self.configuration.storage.port,
         )
 
         async def startup() -> None:
@@ -146,7 +151,7 @@ class FastAgentServer:
             self._logger.info("Starting application")
 
             if self.configuration.storage.database == "postgresql":
-                self._api.async_pool = await init_database(test_dsn)
+                self._api.async_pool = await init_database(dsn)
                 self._logger.info("Connection to database established")
 
         return startup

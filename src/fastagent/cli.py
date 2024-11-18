@@ -10,6 +10,7 @@ from rich.panel import Panel
 
 from fastagent.configuration import Config
 from fastagent.internal.data import setup_postgresql_database
+from fastagent.internal.settings import Settings
 from fastagent.server import FastAgentServer
 
 app = typer.Typer(
@@ -94,8 +95,12 @@ def setup() -> None:
         console.print("[bold red]❌ Configuration file not found![/bold red]")
         return
 
-    # TODO: Remove this once we have a proper way to get the DSN from the configuration  # noqa: E501, FIX002, TD002, TD003
-    test_dsn = "postgresql://postgres:postgres@localhost:5432/fastagent"
+    settings = Settings()
+    dsn = settings.database.get_dsn(
+        name=config.storage.name,
+        host=config.storage.host,
+        port=config.storage.port,
+    )
 
     if (
         config.storage.database
@@ -106,7 +111,7 @@ def setup() -> None:
         )
 
         if config.storage.database == "postgresql":
-            asyncio.run(setup_postgresql_database(test_dsn))
+            asyncio.run(setup_postgresql_database(dsn))
 
 
 @app.command()
