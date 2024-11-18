@@ -4,6 +4,7 @@ import logging
 from typing import Literal
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from granian.server import Granian
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -106,6 +107,27 @@ class FastAgentServer:
 
         Setup the middleware according to the configuration.
         """
+        # Filter out None values from allowed_origins
+        # Avoid attack from a sandboxed iframe
+        allowed_origins = [
+            origin for origin in self.configuration.security.allowed_origins if origin
+        ]
+
+        if "*" in allowed_origins and self.configuration.security.allow_credentials:
+            message = (
+                "You are allowing all origins with credentials which is a potential security risk."  # noqa: E501
+                "See https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS for more details."  # noqa: E501
+            )
+            raise ValueError(message)
+
+        self._api.add_middleware(
+            CORSMiddleware,
+            allow_origins=allowed_origins,
+            allow_credentials=self.configuration.security.allow_credentials,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+
         # Default middlewares
         self._api.add_middleware(RequestLoggingMiddleware, logger=self._logger)
 

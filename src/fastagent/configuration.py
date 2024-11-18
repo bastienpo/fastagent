@@ -55,6 +55,8 @@ class Security(BaseModel):
     """
 
     authentication: Literal["stateful-postgresql"] | None = Field(default=None)
+    allowed_origins: list[str] = Field(default=["*"])
+    allow_credentials: bool = Field(default=False)
     ssl_cert: str | None = Field(default=None)
     ssl_key: str | None = Field(default=None)
 
